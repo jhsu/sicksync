@@ -109,7 +109,7 @@ function onAuthorized() {
         commandHandler(command, function() {
             setTimeout(function() {
                 watching = startFileWatch();
-            }, 300);
+            }, 50);
         });
         promptCommand(input, callback);
     });
