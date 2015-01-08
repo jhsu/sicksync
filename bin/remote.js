@@ -32,9 +32,9 @@ function removePath(message) {
     fs.delete(destinationLocation + message.location);
 }
 
-server.on('run-command', function(command) {
-    sys.puts('[' + config.hostname + '] Running: ' + command);
-    exec(command, function(err, stdout, stderr) {
+server.on('run-command', function(message) {
+    sys.puts('[' + config.hostname + '] Running: ' + message.command);
+    exec(message.command, function(err, stdout, stderr) {
         sys.puts(stdout);
         sys.puts(stderr);
     });
