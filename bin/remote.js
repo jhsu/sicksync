@@ -8,6 +8,8 @@
  *  you shouldn't need this file at all
  */
 var fs = require('fs-extra'),
+    sys = require('sys'),
+    exec = require('child_process').exec,
     Server = require('../lib/ws-server'),
     util = require('../lib/util'),
     config = util.getConfig(),
@@ -29,6 +31,14 @@ function addDir(message) {
 function removePath(message) {
     fs.delete(destinationLocation + message.location);
 }
+
+server.on('run-command', function(command) {
+    sys.puts('[' + config.hostname + '] Running: ' + command);
+    exec(command, function(err, stdout, stderr) {
+        sys.puts(stdout);
+        sys.puts(stderr);
+    });
+});
 
 server.on('file-change', function(message) {
     if (config.debug) console.log('[' + config.hostname + '] < ' + message.changeType + ' ' + message.location);

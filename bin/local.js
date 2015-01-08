@@ -6,6 +6,9 @@
  *  Entry point into the client portion of sicksync
  */
 var fs = require('fs'),
+    sys = require('sys'),
+    exec = require('child_process').exec,
+    readline = require('readline'),
     watcher = require('chokidar'),
     path = require('path'),
     util = require('../lib/util'),
@@ -75,7 +78,27 @@ function startFileWatch() {
     }).on('all', filterAndRebounce);
 }
 
+function commandHandler(command) {
+    // run command locally
+    exec(command, function(err, stdout, stderr) {
+        sys.puts("stdout: " + stdout);
+        sys.puts("stderr: " + stderr);
+        console.log('[local] Running: ' + command);
+    });
+    devbox.send({
+        subject: 'command',
+        commmand: command
+    });
+}
+
 function onAuthorized() {
+    var input = readline.createInterface({
+        input: process.stdin,
+        output: process.stdout
+    });
+
+    input.question("> ", commandHandler);
+
     startFileWatch();
     console.log(('Connected to ' + config.hostname + (config.prefersEncrypted ? ' using' : ' not using') + ' encryption').green);
 }
