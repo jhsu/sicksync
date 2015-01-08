@@ -87,7 +87,7 @@ function commandHandler(command) {
     });
     devbox.send({
         subject: 'command',
-        commmand: command
+        command: command
     });
 }
 

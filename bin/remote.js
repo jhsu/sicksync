@@ -33,7 +33,6 @@ function removePath(message) {
 }
 
 server.on('run-command', function(message) {
-    console.log(message);
     sys.puts('[' + config.hostname + '] Running: ' + message.command);
     exec(message.command, function(err, stdout, stderr) {
         sys.puts(stdout);
