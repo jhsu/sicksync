@@ -79,15 +79,21 @@ function startFileWatch() {
 }
 
 function commandHandler(command) {
-    // run command locally
     exec(command, function(err, stdout, stderr) {
-        sys.puts("stdout: " + stdout);
-        sys.puts("stderr: " + stderr);
         console.log('[local] Running: ' + command);
+        sys.puts(stdout);
+        sys.puts(stderr);
     });
     devbox.send({
         subject: 'command',
         command: command
+    });
+}
+
+function promptCommand(input, handler) {
+    input.question('> ', function (response) {
+        handler(response);
+        promptCommand(input, handler);
     });
 }
 
@@ -97,7 +103,7 @@ function onAuthorized() {
         output: process.stdout
     });
 
-    input.question("> ", commandHandler);
+    promptCommand(input, commandHandler);
 
     startFileWatch();
     console.log(('Connected to ' + config.hostname + (config.prefersEncrypted ? ' using' : ' not using') + ' encryption').green);

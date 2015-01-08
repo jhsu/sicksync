@@ -34,7 +34,9 @@ function removePath(message) {
 
 server.on('run-command', function(message) {
     sys.puts('[' + config.hostname + '] Running: ' + message.command);
-    exec(message.command, function(err, stdout, stderr) {
+    exec(message.command, {
+        cwd: destinationLocation
+    }, function(err, stdout, stderr) {
         sys.puts(stdout);
         sys.puts(stderr);
     });
