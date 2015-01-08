@@ -71,18 +71,21 @@ function onFileChange(evt, filepath) {
 }
 
 function startFileWatch() {
-    watcher.watch(config.sourceLocation, {
+    var watching = watcher.watch(config.sourceLocation, {
         ignored: ignored,
         persistent: true,
         ignoreInitial: true
-    }).on('all', filterAndRebounce);
+    });
+    watching.on('all', filterAndRebounce);
+    return watching;
 }
 
-function commandHandler(command) {
+function commandHandler(command, cb) {
     exec(command, function(err, stdout, stderr) {
         console.log('[local] Running: ' + command);
         sys.puts(stdout);
         sys.puts(stderr);
+        cb();
     });
     devbox.send({
         subject: 'command',
@@ -90,11 +93,8 @@ function commandHandler(command) {
     });
 }
 
-function promptCommand(input, handler) {
-    input.question('> ', function (response) {
-        handler(response);
-        promptCommand(input, handler);
-    });
+function promptCommand(input, cb) {
+    input.question('> ', cb);
 }
 
 function onAuthorized() {
@@ -102,10 +102,18 @@ function onAuthorized() {
         input: process.stdin,
         output: process.stdout
     });
+    var watching = startFileWatch();
 
-    promptCommand(input, commandHandler);
+    promptCommand(input, function callback(command) {
+        watching.close();
+        commandHandler(command, function() {
+            setTimeout(function() {
+                watching = startFileWatch();
+            }, 300);
+        });
+        promptCommand(input, callback);
+    });
 
-    startFileWatch();
     console.log(('Connected to ' + config.hostname + (config.prefersEncrypted ? ' using' : ' not using') + ' encryption').green);
 }
 
