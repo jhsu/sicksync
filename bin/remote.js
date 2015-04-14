@@ -7,6 +7,8 @@
  *  If you are planning on remotely working (shelling into the box), then
  *  you shouldn't need this file at all
  */
+
+// TODO: get config from connection
 var fs = require('fs-extra'),
     sys = require('sys'),
     Server = require('../lib/ws-server'),

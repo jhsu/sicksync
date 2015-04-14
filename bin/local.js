@@ -43,17 +43,18 @@ function onBigTransferDone() {
 }
 
 function filterAndRebounce(evt, filepath) {
-    var relativePath = filepath.replace(config.sourceLocation, '');
-    
+    var projectPath = path.resolve(config.sourceLocation);
+    var relativePath = filepath.replace(projectPath, '');
+
     if (util.isExcluded(relativePath, ignored) || isPaused) return false;
-    
+
     rebouncedFileChange(evt, filepath);
 }
 
 function onFileChange(evt, filepath) {
-    if (util.isExcluded(filepath, ignored) || isPaused) return false;
     var fileContents = null;
-    var localPath = filepath.replace(config.sourceLocation, '');
+    var projectPath = path.resolve(config.sourceLocation);
+    var localPath = filepath.replace(projectPath, '');
 
     if (evt === 'add' || evt === 'change') {
         fileContents = fs.readFileSync(filepath).toString();
@@ -73,7 +74,7 @@ function onFileChange(evt, filepath) {
 }
 
 function startFileWatch() {
-    watcher.watch(config.sourceLocation, {
+    watcher.watch(path.resolve(config.sourceLocation), {
         ignored: ignored,
         persistent: true,
         ignoreInitial: true

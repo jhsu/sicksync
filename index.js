@@ -7,6 +7,7 @@
  *  EVERYTIME a sync is kicked off.
  */
 var fs = require('fs-extra'),
+    path = require('path'),
     program = require('commander'),
     util = require('./lib/util'),
     package = require('./package.json'),
@@ -31,7 +32,8 @@ if (program.setup || !hasSetup) {
 }
 
 if (hasSetup) {
-    config = require(configPath);
+    var localConfig = path.join(process.cwd(), '.sicksync-config.json');
+    config = fs.existsSync(localConfig) ? require(localConfig) : require(configPath);
 
     if (typeof program.encrypt !== 'undefined') {
         config.prefersEncrypted = program.encrypt;
